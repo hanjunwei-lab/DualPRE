@@ -5,7 +5,11 @@ Code by **Jiashuo Wu** at Harbin Medical University.
 ## 1. Introduction
 >This repository contains source code and data for **DualPRE** 
 
-**DualPRE** is a novel deep learning framework that integrates graph- and transformer-based modules to learn comprehensive patient feature representations for various oncological prediction tasks. To address the limitations of existing models, we propose two innovative modules: the adaptive graph attention (**AGAT**) module and the transformer-based (**TRAN**) module, which are seamlessly integrated into the DualPRE framework. <u>The AGAT module does not rely on a fixed network during training. Instead, it generates an adaptively evolving patient similarity network (PSN) that is continuously updated throughout the training process based on the model's prediction objective, enabling more effective GAT learning and informative patient representations. The TRAN module takes each single patient as input for a transformer encoder and models the crosstalk between features while preserving patient-specific information, thereby generating more personalized representations for each patient.</u> The DualPRE framework employs a dual-channel architecture that takes pathway and cell activity profiles as inputs, respectively. Each channel integrates the AGAT and TRAN modules to process the input features, enabling the model to comprehensively capture both inter-patient similarities and intra-patient biological crosstalk, and to generate high-quality representations. The representations derived from the two channels are concatenated and passed to the final prediction layer to carry out specific oncological prediction tasks.
+**DualPRE** is a Dual-View and Dual-Level Patient REpresentation framework designed to learn comprehensive patient representations for diverse oncological prediction tasks. DualPRE employs a dual-channel architecture to 
+dynamically model two distinct biological views: the tumor's intrinsic signals and its extrinsic microenvironment. Each channel processes a specific data modality, pathway activities or TME cell infiltration levels, and integrates two core learning modules: an Adaptive Graph Attention (**AGAT**) module, which captures adaptively evolving inter-patient similarities at the population level, and a Transformer-based (**TRAN**) module, which models intra-patient molecular interactions at the individual level. This dual-level design embeds both pathway and TME information into patient representations at two complementary scales. The resulting representations are then concatenated and passed to a multilayer perceptron (MLP) for oncological prediction tasks.
+
+* **Note:** 
+The **AGAT** module does not rely on a fixed network during training. Instead, it generates an adaptively evolving patient similarity network (PSN) that is continuously updated throughout the training process based on the model's prediction objective, enabling more effective GAT learning and informative patient representations. The **TRAN** module takes each single patient as input for a transformer encoder and models the crosstalk between features while preserving patient-specific information, thereby generating more personalized representations for each patient.
 
 ## 2. Design of DualPRE
 
@@ -40,7 +44,7 @@ Figure 1: Overall architecture of DualPRE
 This study trained four different models to verify the performance of DualPRE. This GitHub project includes the code and data used for training the models and performing the analyses in this study.
 
 ### 4.1. Code
-- All the code files are stored in the ``code/`` folder, with the details of each file as follows:
+All the code files are stored in the ``code/`` folder, with the details of each file as follows:
 
 | File                              | Description                                                                   |
 |------------------------------------|------------------------------------------------------------------------|
@@ -54,8 +58,8 @@ This study trained four different models to verify the performance of DualPRE. T
 | Train_survival.ipynb                           | Training the model of predicting prognostic risk and performing external testing.             |
 | model_interpret.ipynb                           | Extract the PSN, attention weights, and new features from the trained model.             |
 
-- Users who want to reproduce the models from this study only need to activate the Python environment configured in Step 3 and then run the corresponding Train_*.ipynb files. These files contain several tunable parameters:
 
+* Users who want to reproduce the models from this study only need to activate the Python environment configured in Step 3 and then run the corresponding Train_*.ipynb files. These files contain several tunable parameters. When users want to train a new model, they only need to use their own data and modify these parameters accordingly:
 
     * ``--task``：The name of the task.
     * ``--epochs``:  The number of training iterations.
@@ -92,36 +96,34 @@ This study trained four different models to verify the performance of DualPRE. T
     * ``--save``: Whether to save the training and validation sets for each cross-validation fold
     * ``--drop_last``: Whether to drop the last batch if its size is smaller than batch_size
 
->When users want to train a new model, they only need to use their own data and modify these parameters accordingly.
+
 
 ### 4.2 Data
 The datasets used to train and test different models can be downloaded from the ``data.7z`` link:
 [Click here to download data.7z from google drive.](https://drive.google.com/file/d/1mrvfu5z3tjuhX5qUfqJe_5SyAvkS6EbK/view) The structure of this folder is as follows:
 
 
-
     data/
-    ├── cancerdetection/                                      # 用于癌症检测任务
-    │   ├── Pancancer_disease_exp.csv                           # 训练集特征
-    │   ├── Pancancer_disease_label.csv                         # 训练集标签
-    │   ├── GDC CPTAC-3_disease_exp.csv                         # 测试集特征
-    │   └── GDC CPTAC-3_disease_label.csv                       # 测试集标签
-    ├── BRCAsubtype/                                          # 用于 BRCA 亚型预测任务
-    │   ├── metabric_term.csv                                   # 训练集特征
-    │   ├── metabric_clinical_4subtype.csv                      # 训练集标签
-    │   ├── BRCA_term.csv                                       # 测试集特征
-    │   └── BRCA_clinical_4subtype.csv                          # 测试集标签
-    ├── CRCsubtype/                                           # 用于 CRC 亚型预测任务
-    │   ├── CRC_geo.csv                                         # 训练集特征
-    │   ├── CRC_label_geo.csv                                   # 训练集标签
-    │   ├── COAD_term.csv                                       # 测试集特征
-    │   └── CRC_label_coad.csv                                  # 测试集标签
-    └── survival/                                             # 用于预后风险预测任务
-        ├── Pancancer_Survival_exp.csv                          # 训练集特征
-        ├── Pancancer_Survival_label.csv                        # 训练集标签
-        ├── GDC CPTAC-3_Surv_exp.csv                            # 测试集特征
-        └── GDC CPTAC-3_Surv_label.csv                          # 测试集标签
-
+    ├── cancerdetection/                                      # For cancer detection task
+    │   ├── Pancancer_disease_exp.csv                           # Training features
+    │   ├── Pancancer_disease_label.csv                         # Training labels
+    │   ├── GDC CPTAC-3_disease_exp.csv                         # Test features
+    │   └── GDC CPTAC-3_disease_label.csv                       # Test labels
+    ├── BRCAsubtype/                                          # For BRCA subtype prediction
+    │   ├── metabric_term.csv                                   # Training features
+    │   ├── metabric_clinical_4subtype.csv                      # Training labels
+    │   ├── BRCA_term.csv                                       # Test features
+    │   └── BRCA_clinical_4subtype.csv                          # Test labels
+    ├── CRCsubtype/                                           # For CRC subtype prediction
+    │   ├── CRC_geo.csv                                         # Training features
+    │   ├── CRC_label_geo.csv                                   # Training labels
+    │   ├── COAD_term.csv                                       # Test features
+    │   └── CRC_label_coad.csv                                  # Test labels
+    └── survival/                                             # For survival risk prediction
+        ├── Pancancer_Survival_exp.csv                          # Training features
+        ├── Pancancer_Survival_label.csv                        # Training labels
+        ├── GDC CPTAC-3_Surv_exp.csv                            # Test features
+        └── GDC CPTAC-3_Surv_label.csv                          # Test labels
 
 
 ## 5. Model interpretion
@@ -129,4 +131,5 @@ From the trained model, we can obtain the evolved PSN. In addition, we can extra
 
 
         
+
 
