@@ -1,7 +1,7 @@
 library(GSVA)
 
-load("D:/pathway_genes.rdata")
-load("D:/TMEcell.rdata")
+load("../pathway_genes.rdata")
+load("../TMEcell.rdata")
 TMEcell <- as.data.frame(TMEcell)
 pathway_genes[,1] <- gsub(",", "_", pathway_genes[,1])
 
