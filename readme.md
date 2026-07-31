@@ -57,6 +57,7 @@ All the code files are stored in the ``code/`` folder, with the details of each 
 | Train_CRCsubtypes.ipynb                           | Training the model of predicting colorectal cancer subtype and performing external testing.             |
 | Train_survival.ipynb                           | Training the model of predicting prognostic risk and performing external testing.             |
 | model_interpret.ipynb                           | Extract the PSN, attention weights, and new features from the trained model.             |
+| preprocess.R                           | Gene expression data processing, including quality control, normalization, and the generation of pathway- and cell-level features.           |
 
 
 * Users who want to reproduce the models from this study only need to activate the Python environment configured in Step 3 and then run the corresponding Train_*.ipynb files. These files contain several tunable parameters. When users want to train a new model, they only need to use their own data and modify these parameters accordingly:
